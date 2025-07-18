@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Licznik do wydarzenia</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #111;
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 30px;
+    }
+
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      font-size: 2em;
+    }
+
+    .time-block {
+      background-color: #222;
+      padding: 20px;
+      border-radius: 10px;
+      min-width: 100px;
+      box-shadow: 0 0 10px rgba(255, 255      font-size: 2.5em;
+      font-weight: bold;
+      color: #00ffcc;
+    }
+
+    .time-label {
+      font-size: 0.9em;
+      color: #aaa;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Do koncertu zostało:</h1>
+  <div class="countdown">
+    <div class="time-block">
+      <div class="time-value" id="days">--</div>
+      <div class="time-label">dni</div>
+    </div>
+    <div class="time-block">
+      <div class="time-value" id="hours">--</div>
+      <div class="time-label">godz.</div>
+    </div>
+    <div class="time-block">
+      <div class="time-value" id="minutes">--</div>
+      <div class="time-label">min</div>
+    </div>
+    <div class="time-block">
+      <div class="time-value" id="seconds">--</div>
+      <div class="time-label">sek</div>
+    </div>
+  </div>
+
+  <script>
+    const eventDate = new Date(2025, 7, 9, 18, 0);
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = eventDate - now;
+
+      if (diff <= 0) {
+        document.querySelector(".countdown").innerHTML = "Koncert już trwa!";
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("days").textContent = days;
+      document.getElementById("hours").textContent = hours.toString().padStart(2, '0');
+      document.getElementById("minutes").textContent = minutes.toString().padStart(2, '0');
+      document.getElementById("seconds").textContent = seconds.toString().padStart(2, '0');
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000); // aktualizacja co sekundę
+  </script>
+</body>
+</html>
