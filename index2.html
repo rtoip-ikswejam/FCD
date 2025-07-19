@@ -1,115 +1,126 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:image" content="https://github.com/rtoip-ikswejam/FCD/blob/f18b5bd07fdc1d8b997cda19486f31546dbed712/SA%20Clock%20Button.png" />
-    <meta property="og:title" content="Dla niecierpliwych" />
-    <meta property="og:description" content="Licznik czasu do koncertu" />
-    <title>Dla niecierpliwych</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #111;
-            color: #fff;
-            text-align: center;
-            margin: 0;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 2rem;
-        }
-        .countdown {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-            width: 100%;
-            max-width: 600px;
-        }
-        .tile {
-            background-color: #00ffcc;
-            color: #000;
-            border-radius: 1rem;
-            padding: 2rem 1rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .label {
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-        }
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation: none !important;
-                transition: none !important;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:image" content="https://github.com/rtoip-ikswejam/FCD/blob/f18b5bd07fdc1d8b997cda19486f31546dbed712/SA%20Clock%20Button.png" />
+  <meta property="og:title" content="Dla niecierpliwych" />
+  <meta property="og:description" content="Licznik czasu do koncertu" />
+  <title>Dla niecierpliwych</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #111;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .tile {
+      background-color: #00ffcc;
+      color: #000;
+      border-radius: 1rem;
+      padding: 2rem 1rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc;
+    }
+
+    .label {
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1 id="event-title">Ładowanie...</h1>
-    <div class="countdown" aria-live="polite">
-        <div class="tile" id="days">--<div class="label">dni</div></div>
-        <div class="tile" id="hours">--<div class="label">godzin</div></div>
-        <div class="tile" id="minutes">--<div class="label">minut</div></div>
-        <div class="tile" id="seconds">--<div class="label">sekund</div></div>
-    </div>
+  <h1 id="event-title" role="heading" aria-live="polite">Ładowanie...</h1>
+  <div class="countdown" aria-live="polite">
+    <div class="tile" id="days">--<div class="label">dni</div></div>
+    <div class="tile" id="hours">--<div class="label">godzin</div></div>
+    <div class="tile" id="minutes">--<div class="label">minut</div></div>
+    <div class="tile" id="seconds">--<div class="label">sekund</div></div>
+  </div>
 
-    <script>
-        const SPREADSHEET_ID = '1erA77VcSTYUT-RB5boJD1s5W0UtQNX8VGUdEtQQ5SaI';
-        const SHEET_RANGE = 'A2:F2';
+  <script>
+    const SPREADSHEET_ID = '1erA77VcSTYUT-RB5boJD1s5W0UtQNX8VGUdEtQQ5SaI';
+    const SHEET_RANGE = 'A2:F2';
 
-        async function fetchEventData() {
-            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_RANGE}?alt=json&key=YOUR_API_KEY`;
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                const [year, month, day, hour, minute, description] = data.values[1];
-                const eventDate = new Date(year, month - 1, day, hour, minute);
-                document.getElementById('event-title').textContent = description;
-                startCountdown(eventDate);
-            } catch (err) {
-                console.error('Błąd pobierania danych:', err);
-                document.getElementById('event-title').textContent = 'Nie udało się pobrać danych';
-            }
+    async function fetchEventData() {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_RANGE};
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.values || data.values.length === 0) throw new Error("Brak danych");
+
+        const [year, month, day, hour, minute, description] = data.values[0];
+        const eventDate = new Date(year, month - 1, day, hour, minute);
+
+        document.getElementById("event-title").textContent = description;
+        startCountdown(eventDate);
+      } catch (error) {
+        console.error('Błąd przy pobieraniu danych:', error);
+        document.getElementById("event-title").textContent = "Nie udało się pobrać danych wydarzenia.";
+      }
+    }
+
+    function startCountdown(eventDate) {
+      function update() {
+        const now = new Date();
+        const diff = eventDate - now;
+
+        if (diff <= 0) {
+          document.querySelector(".countdown").innerHTML = '<div class="tile">Wydarzenie trwa!</div>';
+          clearInterval(interval);
+          return;
         }
 
-        function startCountdown(targetDate) {
-            function update() {
-                const now = new Date();
-                const diff = targetDate - now;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
 
-                if (diff <= 0) {
-                    document.querySelector('.countdown').innerHTML = '<div class="tile">Wydarzenie trwa!</div>';
-                    clearInterval(timer);
-                    return;
-                }
+        document.getElementById("days").childNodes[0].textContent = days;
+        document.getElementById("hours").childNodes[0].textContent = hours;
+        document.getElementById("minutes").childNodes[0].textContent = minutes;
+        document.getElementById("seconds").childNodes[0].textContent = seconds;
+      }
 
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                const minutes = Math.floor((diff / (1000 * 60)) % 60);
-                const seconds = Math.floor((diff / 1000) % 60);
+      update();
+      const interval = setInterval(update, 1000);
+    }
 
-                document.getElementById('days').firstChild.textContent = days;
-                document.getElementById('hours').firstChild.textContent = hours;
-                document.getElementById('minutes').firstChild.textContent = minutes;
-                document.getElementById('seconds').firstChild.textContent = seconds;
-            }
-            update();
-            const timer = setInterval(update, 1000);
-        }
-
-        fetchEventData();
-    </script>
+    fetchEventData();
+  </script>
 </body>
 </html>
