@@ -18,21 +18,21 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background-color: #111; /* Bardzo ciemne tło */
-            color: #fff; /* Biały tekst */
+            background-color: #111; /* Bardzo ciemne tło, zgodnie z prośbą */
+            color: #fff; /* Biały tekst, zgodnie z prośbą */
             text-align: center;
             padding: 40px 20px;
-            margin: 0; /* Usunięcie domyślnego marginesu body */
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh; /* Zajmuje całą wysokość widoku */
+            min-height: 100vh;
         }
         h1 {
-            font-size: 2.5em; /* Nieco większy niż w podanym stylu */
+            font-size: 2.5em; /* Zachowano nieco większy rozmiar dla lepszej czytelności */
             margin-bottom: 30px;
-            color: #00ffcc; /* Jasnozielony tytuł, aby pasował do wartości */
+            color: #fff; /* Zmieniono na biały, zgodnie z prośbą (domyślny kolor body) */
         }
         .countdown {
             display: flex;
@@ -40,62 +40,62 @@
             justify-content: center;
             gap: 20px;
             font-size: 2em;
-            max-width: 800px; /* Ogranicza szerokość kontenera odliczania */
-            width: 100%; /* Zapewnia responsywność */
+            max-width: 800px;
+            width: 100%;
         }
         .time-block {
-            background-color: #222; /* Ciemniejszy odcień tła */
+            background-color: #222; /* Ciemniejszy odcień tła, zgodnie z prośbą */
             padding: 20px;
             border-radius: 10px;
             min-width: 100px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Delikatny biały cień */
-            flex: 1 1 120px; /* Elastyczne dopasowanie szerokości, bazowa 120px */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            flex: 1 1 120px;
             max-width: 150px;
-            box-sizing: border-box; /* Padding wliczony w szerokość */
+            box-sizing: border-box;
         }
         .time-value {
             font-size: 2.5em;
             font-weight: bold;
-            color: #00ffcc; /* Jasnozielony kolor wartości */
-            display: block; /* Upewnij się, że wartość zajmuje całą linię */
+            color: #00ffcc; /* Jasnozielony kolor wartości, zgodnie z prośbą */
+            display: block;
         }
         .time-label {
             font-size: 0.9em;
-            color: #aaa; /* Szary kolor etykiet */
+            color: #aaa; /* Szary kolor etykiet, zgodnie z prośbą */
             margin-top: 5px;
-            display: block; /* Upewnij się, że etykieta zajmuje całą linię */
-            text-transform: uppercase; /* Etykiety dużymi literami */
+            display: block;
+            text-transform: uppercase;
         }
 
         #status {
             margin-top: 30px;
             font-size: 1.1em;
-            color: #00ffcc; /* Kolor statusu */
+            color: #00ffcc; /* Kolor statusu zmieniono na jasnozielony dla spójności */
             font-weight: bold;
         }
 
         .data-source {
             margin-top: 20px;
             font-size: 0.8em;
-            color: #777; /* Ciemniejszy szary dla źródła danych */
+            color: #aaa; /* Szary dla źródła danych, zgodnie z prośbą */
         }
 
         /* RWD - Media Queries */
         @media (max-width: 600px) {
             body {
-                padding: 20px 10px; /* Mniejszy padding na mniejszych ekranach */
+                padding: 20px 10px;
             }
             h1 {
-                font-size: 1.8em; /* Zmniejsz rozmiar H1 */
+                font-size: 1.8em;
             }
             .countdown {
-                gap: 10px; /* Mniejsze przerwy między blokami */
+                gap: 10px;
             }
             .time-block {
                 padding: 15px;
-                min-width: unset; /* Usuń minimalną szerokość */
-                flex: 1 1 calc(50% - 15px); /* Dwa bloki na wiersz z odstępami */
-                max-width: unset; /* Usuń ograniczenie max-width */
+                min-width: unset;
+                flex: 1 1 calc(50% - 15px);
+                max-width: unset;
             }
             .time-value {
                 font-size: 2em;
@@ -111,7 +111,8 @@
         <p>Data wydarzenia pobrana z Google Sheets:</p>
         <p class="data-source">Rok: <span id="sheetRok"></span> | Miesiąc: <span id="sheetMiesiac"></span> | Dzień: <span id="sheetDzien"></span> | Godzina: <span id="sheetGodzina"></span> | Minuta: <span id="sheetMinuta"></span></p>
         
-        <div class="countdown"> <div class="time-block">
+        <div class="countdown">
+            <div class="time-block">
                 <span class="time-value" id="days">00</span>
                 <p class="time-label">Dni</p>
             </div>
