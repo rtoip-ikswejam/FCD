@@ -80,9 +80,24 @@
       try {
         const response = await fetch(url);
         const csvText = await response.text();
-        const [year, month, day, hour, minute, description] = csvText.split(',');
-        const eventDate = new Date(year, month - 1, day, hour, minute);
+        const [yearRaw, monthRaw, dayRaw, hourRaw, minuteRaw, descRaw] = csvText.trim().split(/[,;]/);
 
+        const pad = val => val.toString().padStart(2, '0');
+        const year = parseInt(yearRaw);
+        const month = parseInt(monthRaw);
+        const day = parseInt(dayRaw);
+        const hour = parseInt(hourRaw);
+        const minute = parseInt(minuteRaw);
+        const description = descRaw.replace(/^"|"$/g, '').trim();
+
+        if (
+          isNaN(year) || isNaN(month) || isNaN(day) ||
+          isNaN(hour) || isNaN(minute) || !description
+        ) {
+          throw new Error("Nieprawidłowe dane w arkuszu.");
+        }
+
+        const eventDate = new Date(year, month - 1, day, hour, minute);
         document.getElementById("event-title").textContent = description;
         startCountdown(eventDate);
       } catch (error) {
