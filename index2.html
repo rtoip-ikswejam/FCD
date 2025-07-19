@@ -74,7 +74,7 @@
             try {
                 const res = await fetch(url);
                 const data = await res.json();
-                const [year, month, day, hour, minute, description] = data.values[0];
+                const [year, month, day, hour, minute, description] = data.values[1];
                 const eventDate = new Date(year, month - 1, day, hour, minute);
                 document.getElementById('event-title').textContent = description;
                 startCountdown(eventDate);
