@@ -18,8 +18,8 @@
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            background-color: #111;
-            color: #fff;
+            background-color: #111; /* Bardzo ciemne tło */
+            color: #fff; /* Biały tekst */
             text-align: center;
             padding: 40px 20px;
             margin: 0;
@@ -32,7 +32,7 @@
         h1 {
             font-size: 2.5em;
             margin-bottom: 30px;
-            color: #fff;
+            color: #fff; /* Biały tytuł */
         }
         .countdown {
             display: flex;
@@ -43,13 +43,14 @@
             max-width: 800px;
             width: 100%;
         }
+        /* KLUCZOWA ZMIANA TUTAJ: Kwadratowe bloki z padding-hackiem */
         .time-block {
-            background-color: #222;
+            background-color: #222; /* Ciemniejszy odcień tła */
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-            flex: 1 1 120px;
+            flex: 1 1 120px; /* Elastyczne dopasowanie szerokości, bazowa 120px */
             max-width: 150px;
-            box-sizing: border-box;
+            box-sizing: border-box; /* Padding wliczony w szerokość */
 
             /* Kwadratowy hack: */
             position: relative; /* Ważne dla pozycjonowania zawartości */
@@ -67,8 +68,8 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; /* Wyśrodkowanie w pionie */
+            align-items: center; /* Wyśrodkowanie w poziomie */
             padding: 10px; /* Dodatkowy padding wewnątrz, jeśli potrzebny */
             box-sizing: border-box; /* Padding wliczony w szerokość/wysokość */
         }
@@ -76,13 +77,13 @@
         .time-value {
             font-size: 2.5em;
             font-weight: bold;
-            color: #00ffcc;
+            color: #00ffcc; /* Jasnozielony kolor wartości */
             display: block;
             line-height: 1.2; /* Lepsze odstępy dla tekstu w kwadracie */
         }
         .time-label {
             font-size: 0.9em;
-            color: #aaa;
+            color: #aaa; /* Szary kolor etykiet */
             margin-top: 5px;
             display: block;
             text-transform: uppercase;
@@ -91,14 +92,14 @@
         #status {
             margin-top: 30px;
             font-size: 1.1em;
-            color: #00ffcc;
+            color: #00ffcc; /* Kolor statusu zmieniono na jasnozielony dla spójności */
             font-weight: bold;
         }
 
         .data-source {
             margin-top: 20px;
             font-size: 0.8em;
-            color: #aaa;
+            color: #aaa; /* Szary dla źródła danych */
         }
 
         /* RWD - Media Queries */
@@ -127,25 +128,34 @@
     </style>
 </head>
 <body>
-    <div class="container"> <h1 id="mainTitle">Odliczanie do Wydarzenia!</h1> 
+    <div class="container">
+        <h1 id="mainTitle">Odliczanie do Wydarzenia!</h1> 
+        <p>Data wydarzenia pobrana z Google Sheets:</p>
         <p class="data-source">Rok: <span id="sheetRok"></span> | Miesiąc: <span id="sheetMiesiac"></span> | Dzień: <span id="sheetDzien"></span> | Godzina: <span id="sheetGodzina"></span> | Minuta: <span id="sheetMinuta"></span></p>
         
         <div class="countdown">
             <div class="time-block">
-                <span class="time-value" id="days">00</span>
-                <p class="time-label">dni</p>
+                <div class="time-block-content"> <span class="time-value" id="days">00</span>
+                    <p class="time-label">Dni</p>
+                </div>
             </div>
             <div class="time-block">
-                <span class="time-value" id="hours">00</span>
-                <p class="time-label">godz</p>
+                <div class="time-block-content">
+                    <span class="time-value" id="hours">00</span>
+                    <p class="time-label">Godziny</p>
+                </div>
             </div>
             <div class="time-block">
-                <span class="time-value" id="minutes">00</span>
-                <p class="time-label">min</p>
+                <div class="time-block-content">
+                    <span class="time-value" id="minutes">00</span>
+                    <p class="time-label">Minuty</p>
+                </div>
             </div>
             <div class="time-block">
-                <span class="time-value" id="seconds">00</span>
-                <p class="time-label">sek</p>
+                <div class="time-block-content">
+                    <span class="time-value" id="seconds">00</span>
+                    <p class="time-label">Sekundy</p>
+                </div>
             </div>
         </div>
         <p id="status"></p>
