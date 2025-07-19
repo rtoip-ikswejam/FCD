@@ -75,36 +75,38 @@
     const SPREADSHEET_ID = '1erA77VcSTYUT-RB5boJD1s5W0UtQNX8VGUdEtQQ5SaI';
     const SHEET_RANGE = 'A2:F2';
 
-    async function fetchEventData() {
-      const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&range=${SHEET_RANGE}`;
-      try {
-        const response = await fetch(url);
-        const csvText = await response.text();
-        const [yearRaw, monthRaw, dayRaw, hourRaw, minuteRaw, descRaw] = csvText.trim().split(/[,;]/);
+async function fetchEventData() {
+  const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=DataWydarzenia`;
 
-        const pad = val => val.toString().padStart(2, '0');
-        const year = parseInt(yearRaw);
-        const month = parseInt(monthRaw);
-        const day = parseInt(dayRaw);
-        const hour = parseInt(hourRaw);
-        const minute = parseInt(minuteRaw);
-        const description = descRaw.replace(/^"|"$/g, '').trim();
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+    const json = JSON.parse(text.substring(47, text.length - 2)); // usunięcie callbacka Google
 
-        if (
-          isNaN(year) || isNaN(month) || isNaN(day) ||
-          isNaN(hour) || isNaN(minute) || !description
-        ) {
-          throw new Error("Nieprawidłowe dane w arkuszu.");
-        }
+    const row = json.table.rows[0].c;
+    const year = parseInt(row[0].v);
+    const month = parseInt(row[1].v);
+    const day = parseInt(row[2].v);
+    const hour = parseInt(row[3].v);
+    const minute = parseInt(row[4].v);
+    const description = row[5].v;
 
-        const eventDate = new Date(year, month - 1, day, hour, minute);
-        document.getElementById("event-title").textContent = description;
-        startCountdown(eventDate);
-      } catch (error) {
-        console.error('Błąd przy pobieraniu danych:', error);
-        document.getElementById("event-title").textContent = "Nie udało się pobrać danych wydarzenia.";
-      }
+    if (
+      isNaN(year) || isNaN(month) || isNaN(day) ||
+      isNaN(hour) || isNaN(minute) || !description
+    ) {
+      throw new Error("Nieprawidłowe dane w arkuszu.");
     }
+
+    const eventDate = new Date(year, month - 1, day, hour, minute);
+    document.getElementById("event-title").textContent = description.trim();
+    startCountdown(eventDate);
+  } catch (error) {
+    console.error('Błąd przy pobieraniu danych:', error);
+    document.getElementById("event-title").textContent = "Nie udało się pobrać danych wydarzenia.";
+  }
+}
+
 
     function startCountdown(eventDate) {
       function update() {
