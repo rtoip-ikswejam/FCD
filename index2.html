@@ -13,51 +13,56 @@
       background-color: #111;
       color: #fff;
       text-align: center;
-      margin: 0;
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      padding: 40px 20px;
     }
 
     h1 {
-      font-size: 2rem;
-      margin-bottom: 2rem;
+      font-size: 2em;
+      margin-bottom: 30px;
     }
 
     .countdown {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 1rem;
-      width: 100%;
-      max-width: 600px;
-    }
-
-    .tile {
-      background-color: #00ffcc;
-      color: #000;
-      border-radius: 1rem;
-      padding: 2rem 1rem;
-      font-size: 1.5rem;
-      font-weight: bold;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      flex-wrap: wrap;
       justify-content: center;
-      box-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
+      gap: 20px;
+      font-size: 2em;
     }
 
-    .label {
-      font-size: 0.875rem;
-      margin-top: 0.5rem;
+    .time-block {
+      background-color: #222;
+      padding: 20px;
+      border-radius: 10px;
+      min-width: 100px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      flex: 1 1 120px;
+      max-width: 150px;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation: none !important;
-        transition: none !important;
+    .time-value {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #00ffcc;
+    }
+
+    .time-label {
+      font-size: 0.9em;
+      color: #aaa;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      .time-value {
+        font-size: 2em;
+      }
+
+      .time-block {
+        padding: 15px;
+        min-width: 80px;
       }
     }
   </style>
@@ -65,45 +70,56 @@
 <body>
   <h1 id="event-title" role="heading" aria-live="polite">Ładowanie...</h1>
   <div class="countdown" aria-live="polite">
-    <div class="tile" id="days">--<div class="label">dni</div></div>
-    <div class="tile" id="hours">--<div class="label">godzin</div></div>
-    <div class="tile" id="minutes">--<div class="label">minut</div></div>
-    <div class="tile" id="seconds">--<div class="label">sekund</div></div>
+    <div class="time-block">
+      <div class="time-value" id="days">--</div>
+      <div class="time-label">dni</div>
+    </div>
+    <div class="time-block">
+      <div class="time-value" id="hours">--</div>
+      <div class="time-label">godzin</div>
+    </div>
+    <div class="time-block">
+      <div class="time-value" id="minutes">--</div>
+      <div class="time-label">minut</div>
+    </div>
+    <div class="time-block">
+      <div class="time-value" id="seconds">--</div>
+      <div class="time-label">sekund</div>
+    </div>
   </div>
 
   <script>
     const SPREADSHEET_ID = '1erA77VcSTYUT-RB5boJD1s5W0UtQNX8VGUdEtQQ5SaI';
-    const SHEET_GID = '0'; // zakładamy, że używasz pierwszego arkusza (GID=0)
+    const SHEET_GID = '0'; // Upewnij się, że to właściwy gid dla Twojego arkusza
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=tsv&gid=${SHEET_GID}`;
 
     async function fetchEventData() {
-      const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=tsv&gid=${SHEET_GID}`;
       try {
-        const response = await fetch(url);
-        const tsvText = await response.text();
-        const rows = tsvText.trim().split('\n');
+        const response = await fetch(SHEET_URL);
+        const text = await response.text();
+        const lines = text.trim().split('\n');
 
-        if (rows.length < 2) throw new Error("Brak drugiego wiersza w arkuszu");
+        if (lines.length < 2) throw new Error("Brak drugiego wiersza");
 
-        const cells = rows[1].split('\t');
-        const [yearRaw, monthRaw, dayRaw, hourRaw, minuteRaw, descRaw] = cells;
+        const row = lines[1].split('\t');
+        if (row.length < 6) throw new Error("Za mało kolumn");
 
-        const year = parseInt(yearRaw);
-        const month = parseInt(monthRaw);
-        const day = parseInt(dayRaw);
-        const hour = parseInt(hourRaw);
-        const minute = parseInt(minuteRaw);
-        const description = descRaw.replace(/^"|"$/g, '').trim();
+        let [year, month, day, hour, minute, description] = row.map(cell => cell.replace(/^"|"$/g, '').trim());
 
-        if (
-          isNaN(year) || isNaN(month) || isNaN(day) ||
-          isNaN(hour) || isNaN(minute) || !description
-        ) {
-          throw new Error("Nieprawidłowe dane w arkuszu.");
+        year = parseInt(year);
+        month = parseInt(month);
+        day = parseInt(day);
+        hour = parseInt(hour);
+        minute = parseInt(minute);
+
+        if ([year, month, day, hour, minute].some(v => isNaN(v))) {
+          throw new Error("Nieprawidłowe dane liczbowe");
         }
 
         const eventDate = new Date(year, month - 1, day, hour, minute);
         document.getElementById("event-title").textContent = description;
         startCountdown(eventDate);
+
       } catch (error) {
         console.error('Błąd przy pobieraniu danych:', error);
         document.getElementById("event-title").textContent = "Nie udało się pobrać danych wydarzenia.";
@@ -116,7 +132,7 @@
         const diff = eventDate - now;
 
         if (diff <= 0) {
-          document.querySelector(".countdown").innerHTML = '<div class="tile">Wydarzenie trwa!</div>';
+          document.querySelector(".countdown").innerHTML = '<div class="time-block"><div class="time-value">0</div><div class="time-label">Wydarzenie trwa!</div></div>';
           clearInterval(interval);
           return;
         }
@@ -126,10 +142,10 @@
         const minutes = Math.floor((diff / (1000 * 60)) % 60);
         const seconds = Math.floor((diff / 1000) % 60);
 
-        document.getElementById("days").childNodes[0].textContent = days;
-        document.getElementById("hours").childNodes[0].textContent = hours;
-        document.getElementById("minutes").childNodes[0].textContent = minutes;
-        document.getElementById("seconds").childNodes[0].textContent = seconds;
+        document.getElementById("days").textContent = days;
+        document.getElementById("hours").textContent = hours.toString().padStart(2, '0');
+        document.getElementById("minutes").textContent = minutes.toString().padStart(2, '0');
+        document.getElementById("seconds").textContent = seconds.toString().padStart(2, '0');
       }
 
       update();
