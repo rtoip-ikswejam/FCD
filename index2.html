@@ -15,188 +15,117 @@
     <meta property="og:url" content="https://twoja_domena.github.io/FCD/">
     <meta property="og:type" content="website">
 
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
-
     <style>
-        :root {
-            --primary-bg: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%); /* Blue gradient */
-            --container-bg: rgba(0, 0, 0, 0.6);
-            --text-color: #ffffff;
-            --highlight-color: #ffeb3b; /* Yellow highlight */
-            --segment-bg: rgba(255, 255, 255, 0.15);
-            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.2);
-            --shadow-heavy: 0 8px 20px rgba(0, 0, 0, 0.3);
-            --border-radius: 12px;
-        }
-
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #111; /* Bardzo ciemne tło */
+            color: #fff; /* Biały tekst */
+            text-align: center;
+            padding: 40px 20px;
+            margin: 0; /* Usunięcie domyślnego marginesu body */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background: var(--primary-bg);
-            color: var(--text-color);
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
-            overflow-x: hidden; /* Zapobiega poziomemu przewijaniu */
-        }
-        .container {
-            background-color: var(--container-bg);
-            padding: 40px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-heavy);
-            text-align: center;
-            backdrop-filter: blur(8px);
-            max-width: 90%; /* Zapewnia responsywność na mniejszych ekranach */
-            width: 800px; /* Maksymalna szerokość dla większych ekranów */
-            box-sizing: border-box; /* Padding wliczony w szerokość */
+            min-height: 100vh; /* Zajmuje całą wysokość widoku */
         }
         h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.8em;
-            margin-bottom: 25px;
-            letter-spacing: 2px;
-            color: var(--highlight-color);
-            text-transform: uppercase;
+            font-size: 2.5em; /* Nieco większy niż w podanym stylu */
+            margin-bottom: 30px;
+            color: #00ffcc; /* Jasnozielony tytuł, aby pasował do wartości */
         }
-        p {
-            font-size: 1.1em;
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-        #countdown {
+        .countdown {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            flex-wrap: wrap; /* Zezwala na zawijanie elementów na mniejszych ekranach */
-            gap: 25px;
-            margin-top: 35px;
+            gap: 20px;
+            font-size: 2em;
+            max-width: 800px; /* Ogranicza szerokość kontenera odliczania */
+            width: 100%; /* Zapewnia responsywność */
         }
-        .time-segment {
-            background-color: var(--segment-bg);
-            padding: 25px 30px;
-            border-radius: var(--border-radius);
+        .time-block {
+            background-color: #222; /* Ciemniejszy odcień tła */
+            padding: 20px;
+            border-radius: 10px;
             min-width: 100px;
-            box-shadow: var(--shadow-light);
-            transition: transform 0.3s ease, background-color 0.3s ease;
-            flex: 1 1 auto; /* Umożliwia rozciąganie/kurczenie */
-            max-width: 150px; /* Ograniczenie szerokości na większych ekranach */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Delikatny biały cień */
+            flex: 1 1 120px; /* Elastyczne dopasowanie szerokości, bazowa 120px */
+            max-width: 150px;
+            box-sizing: border-box; /* Padding wliczony w szerokość */
         }
-        .time-segment:hover {
-            transform: translateY(-8px) scale(1.03);
-            background-color: rgba(255, 255, 255, 0.25);
-        }
-        .time-segment span {
-            display: block;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 4em;
+        .time-value {
+            font-size: 2.5em;
             font-weight: bold;
-            line-height: 1;
-            color: var(--highlight-color);
+            color: #00ffcc; /* Jasnozielony kolor wartości */
+            display: block; /* Upewnij się, że wartość zajmuje całą linię */
         }
-        .time-segment p {
+        .time-label {
             font-size: 0.9em;
-            margin-top: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.8;
+            color: #aaa; /* Szary kolor etykiet */
+            margin-top: 5px;
+            display: block; /* Upewnij się, że etykieta zajmuje całą linię */
+            text-transform: uppercase; /* Etykiety dużymi literami */
         }
+
         #status {
-            margin-top: 35px;
-            font-size: 1.3em;
-            color: var(--highlight-color);
+            margin-top: 30px;
+            font-size: 1.1em;
+            color: #00ffcc; /* Kolor statusu */
             font-weight: bold;
         }
+
         .data-source {
             margin-top: 20px;
-            font-size: 0.9em;
-            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8em;
+            color: #777; /* Ciemniejszy szary dla źródła danych */
         }
 
         /* RWD - Media Queries */
-        @media (max-width: 768px) {
-            .container {
-                padding: 30px 20px;
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px; /* Mniejszy padding na mniejszych ekranach */
             }
             h1 {
-                font-size: 2em; /* Zmniejsz rozmiar H1 na tabletach */
+                font-size: 1.8em; /* Zmniejsz rozmiar H1 */
             }
-            #countdown {
-                gap: 15px; /* Mniejsze przerwy między segmentami */
+            .countdown {
+                gap: 10px; /* Mniejsze przerwy między blokami */
             }
-            .time-segment {
-                padding: 20px 15px;
-                min-width: 80px;
-                max-width: 120px;
-            }
-            .time-segment span {
-                font-size: 3em; /* Zmniejsz rozmiar liczb */
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 25px 15px;
-            }
-            h1 {
-                font-size: 1.6em; /* Zmniejsz rozmiar H1 na smartfonach */
-                word-break: break-word; /* Dzielenie długich słów */
-            }
-            p {
-                font-size: 0.9em;
-            }
-            #countdown {
-                flex-direction: row; /* Segmenty pozostają w rzędzie */
-                flex-wrap: wrap; /* Pozwolą na zawijanie */
-                gap: 10px; /* Mniejsze przerwy */
-            }
-            .time-segment {
-                width: calc(50% - 15px); /* Dwa segmenty na rząd */
-                max-width: none; /* Usuń ograniczenie szerokości */
+            .time-block {
+                padding: 15px;
                 min-width: unset; /* Usuń minimalną szerokość */
-                padding: 15px 10px;
+                flex: 1 1 calc(50% - 15px); /* Dwa bloki na wiersz z odstępami */
+                max-width: unset; /* Usuń ograniczenie max-width */
             }
-            .time-segment:nth-child(even) { /* Przesunięcie dla równego rozłożenia */
-                margin-left: 5px;
+            .time-value {
+                font-size: 2em;
             }
-            .time-segment:nth-child(odd) {
-                margin-right: 5px;
-            }
-            .time-segment span {
-                font-size: 2.5em;
-            }
-            .time-segment p {
-                font-size: 0.75em;
-            }
-            .data-source {
+            .time-label {
                 font-size: 0.8em;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 id="mainTitle">Odliczanie do Wydarzenia!</h1> 
+    <div class="container"> <h1 id="mainTitle">Odliczanie do Wydarzenia!</h1> 
         <p>Data wydarzenia pobrana z Google Sheets:</p>
         <p class="data-source">Rok: <span id="sheetRok"></span> | Miesiąc: <span id="sheetMiesiac"></span> | Dzień: <span id="sheetDzien"></span> | Godzina: <span id="sheetGodzina"></span> | Minuta: <span id="sheetMinuta"></span></p>
         
-        <div id="countdown">
-            <div class="time-segment">
-                <span id="days">00</span>
-                <p>Dni</p>
+        <div class="countdown"> <div class="time-block">
+                <span class="time-value" id="days">00</span>
+                <p class="time-label">Dni</p>
             </div>
-            <div class="time-segment">
-                <span id="hours">00</span>
-                <p>Godziny</p>
+            <div class="time-block">
+                <span class="time-value" id="hours">00</span>
+                <p class="time-label">Godziny</p>
             </div>
-            <div class="time-segment">
-                <span id="minutes">00</span>
-                <p>Minuty</p>
+            <div class="time-block">
+                <span class="time-value" id="minutes">00</span>
+                <p class="time-label">Minuty</p>
             </div>
-            <div class="time-segment">
-                <span id="seconds">00</span>
-                <p>Sekundy</p>
+            <div class="time-block">
+                <span class="time-value" id="seconds">00</span>
+                <p class="time-label">Sekundy</p>
             </div>
         </div>
         <p id="status"></p>
