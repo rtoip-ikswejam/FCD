@@ -46,7 +46,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 15px #00ffcc, 0 0 30px #00ffcc;
+      box-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
     }
 
     .label {
@@ -76,14 +76,11 @@
     const SHEET_RANGE = 'A2:F2';
 
     async function fetchEventData() {
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_RANGE};
+      const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&range=${SHEET_RANGE}`;
       try {
         const response = await fetch(url);
-        const data = await response.json();
-
-        if (!data.values || data.values.length === 0) throw new Error("Brak danych");
-
-        const [year, month, day, hour, minute, description] = data.values[0];
+        const csvText = await response.text();
+        const [year, month, day, hour, minute, description] = csvText.split(',');
         const eventDate = new Date(year, month - 1, day, hour, minute);
 
         document.getElementById("event-title").textContent = description;
