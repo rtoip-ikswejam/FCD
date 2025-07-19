@@ -3,273 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odliczanie do Wydarzenia!</title>
-
-    <meta name="description" content="Odliczanie czasu do koncertu, którego data i godzina pobierana jest automatycznie z Google Sheets.">
-    <meta name="keywords" content="koncert, odliczanie, countdown, Google Sheets, wydarzenie, muzyka, GitHub Pages">
-    <meta name="author" content="Piotr Majewski">
-
-    <meta property="og:title" content="Odliczanie do Wielkiego Koncertu!">
-    <meta property="og:description" content="Sprawdź, ile czasu pozostało do niezapomnianego wydarzenia!">
-    <meta property="og:image" content="https://twoja_domena.github.io/FCD/SA%20Clock%20Button.png">
-    <meta property="og:url" content="https://twoja_domena.github.io/FCD/">
-    <meta property="og:type" content="website">
-
+    <meta property="og:image" content="https://github.com/rtoip-ikswejam/FCD/blob/f18b5bd07fdc1d8b997cda19486f31546dbed712/SA%20Clock%20Button.png" />
+    <meta property="og:title" content="Dla niecierpliwych" />
+    <meta property="og:description" content="Licznik czasu do koncertu" />
+    <title>Dla niecierpliwych</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
             background-color: #111;
             color: #fff;
             text-align: center;
-            padding: 40px 20px;
             margin: 0;
-        }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 30px;
-            color: #fff;
-        }
-        .countdown {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            font-size: 2em;
-            max-width: 800px;
-            width: 100%;
+            padding: 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
         }
-        /* KLUCZOWA ZMIANA TUTAJ: Kwadratowe bloki z padding-hackiem */
-        .time-block {
-            background-color: #222;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-            flex: 1 1 120px;
-            max-width: 150px;
-            /* Usunięto padding z tego elementu, aby nie kolidował z kwadratowym hackiem */
-            box-sizing: border-box;
-
-            /* Kwadratowy hack: */
-            position: relative;
-            width: 100%;
-            padding-bottom: 100%; /* Wysokość równa szerokości */
-            height: 0; /* Zerujemy wysokość */
-            overflow: hidden; /* Dodane, aby upewnić się, że nic nie wychodzi poza krawędzie */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
         }
-
-        /* Kontener dla zawartości kwadratu, by ją wyśrodkować i dodać wewnętrzny padding */
-        .time-block-content {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
             width: 100%;
-            height: 100%;
+            max-width: 600px;
+        }
+        .tile {
+            background-color: #00ffcc;
+            color: #000;
+            border-radius: 1rem;
+            padding: 2rem 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 10px; /* PRZENIESIONY PADDING TUTAJ */
-            box-sizing: border-box; /* Upewnia się, że padding jest wliczony w width/height 100% */
+            justify-content: center;
         }
-
-        .time-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #00ffcc;
-            display: block;
-            line-height: 1.2;
-            margin: 0; /* Upewniamy się, że nie ma domyślnych marginesów */
+        .label {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
         }
-        .time-label {
-            font-size: 0.9em;
-            color: #aaa;
-            margin-top: 5px; /* Delikatny margines między wartością a etykietą */
-            display: block;
-            text-transform: uppercase;
-            margin-bottom: 0; /* Upewniamy się, że nie ma domyślnych marginesów */
-        }
-
-        #status {
-            margin-top: 30px;
-            font-size: 1.1em;
-            color: #00ffcc;
-            font-weight: bold;
-        }
-
-        .data-source {
-            margin-top: 20px;
-            font-size: 0.8em;
-            color: #aaa;
-        }
-
-        /* RWD - Media Queries */
-        @media (max-width: 600px) {
-            body {
-                padding: 20px 10px;
-            }
-            h1 {
-                font-size: 1.8em;
-            }
-            .countdown {
-                gap: 10px;
-            }
-            .time-block {
-                min-width: unset;
-                flex: 1 1 calc(50% - 15px); /* Dwa bloki na wiersz z odstępami */
-                max-width: unset;
-            }
-            .time-value {
-                font-size: 2em;
-            }
-            .time-label {
-                font-size: 0.8em;
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 id="mainTitle">Odliczanie do Wydarzenia!</h1> 
-        <p>Data wydarzenia pobrana z Google Sheets:</p>
-        <p class="data-source">Rok: <span id="sheetRok"></span> | Miesiąc: <span id="sheetMiesiac"></span> | Dzień: <span id="sheetDzien"></span> | Godzina: <span id="sheetGodzina"></span> | Minuta: <span id="sheetMinuta"></span></p>
-        
-        <div class="countdown">
-            <div class="time-block">
-                <div class="time-block-content">
-                    <span class="time-value" id="days">00</span>
-                    <p class="time-label">dni</p>
-                </div>
-            </div>
-            <div class="time-block">
-                <div class="time-block-content">
-                    <span class="time-value" id="hours">00</span>
-                    <p class="time-label">godziny</p>
-                </div>
-            </div>
-            <div class="time-block">
-                <div class="time-block-content">
-                    <span class="time-value" id="minutes">00</span>
-                    <p class="time-label">minuty</p>
-                </div>
-            </div>
-            <div class="time-block">
-                <div class="time-block-content">
-                    <span class="time-value" id="seconds">00</span>
-                    <p class="time-label">sec</p>
-                </div>
-            </div>
-        </div>
-        <p id="status"></p>
+    <h1 id="event-title">Ładowanie...</h1>
+    <div class="countdown" aria-live="polite">
+        <div class="tile" id="days">--<div class="label">dni</div></div>
+        <div class="tile" id="hours">--<div class="label">godzin</div></div>
+        <div class="tile" id="minutes">--<div class="label">minut</div></div>
+        <div class="tile" id="seconds">--<div class="label">sekund</div></div>
     </div>
 
     <script>
-        // *** WAŻNE: Wstaw tutaj ID Twojego publicznego Arkusza Google Sheets ***
-        const SPREADSHEET_ID = '1erA77VcSTYUT-RB5boJD1s5W0UtQNX8VGUdEtQQ5SaI'; 
+        const SPREADSHEET_ID = '1erA77VcSTYUT-RB5boJD1s5W0UtQNX8VGUdEtQQ5SaI';
+        const SHEET_RANGE = 'A2:F2';
 
-        // Adres URL do eksportu arkusza jako TSV
-        const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=tsv&gid=0`;
-
-        let targetDate; 
-
-        async function fetchDataAndStartCountdown() {
-            const statusElement = document.getElementById('status');
-            const mainTitleElement = document.getElementById('mainTitle');
-            statusElement.textContent = 'Trwa ładowanie danych z Google Sheets...';
-
+        async function fetchEventData() {
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_RANGE}?alt=json&key=YOUR_API_KEY`;
             try {
-                const response = await fetch(SHEET_URL);
-                if (!response.ok) {
-                    throw new Error(`Błąd HTTP: ${response.status}. Upewnij się, że ID arkusza jest poprawne i arkusz jest publiczny.`);
-                }
-                const data = await response.text();
-                
-                const rows = data.split('\n');
-                
-                if (rows.length > 1) {
-                    const secondRow = rows[1];
-                    const cells = secondRow.split('\t');
-
-                    if (cells.length >= 6) {
-                        const rok = parseInt(cells[0].trim());
-                        const miesiac = parseInt(cells[1].trim()); 
-                        const dzien = parseInt(cells[2].trim());
-                        const godzina = parseInt(cells[3].trim());
-                        const minuta = parseInt(cells[4].trim());
-                        const tytulWydarzenia = cells[5].trim(); 
-
-                        if (isNaN(rok) || isNaN(miesiac) || isNaN(dzien) || isNaN(godzina) || isNaN(minuta)) {
-                            throw new Error('Dane liczbowe w arkuszu są nieprawidłowe (nie są liczbami).');
-                        }
-
-                        if (tytulWydarzenia) {
-                            mainTitleElement.textContent = tytulWydarzenia;
-                        } else {
-                            mainTitleElement.textContent = "Odliczanie do Wydarzenia!";
-                        }
-
-                        targetDate = new Date(rok, miesiac - 1, dzien, godzina, minuta, 0);
-
-                        document.getElementById('sheetRok').textContent = rok;
-                        document.getElementById('sheetMiesiac').textContent = miesiac;
-                        document.getElementById('sheetDzien').textContent = dzien;
-                        document.getElementById('sheetGodzina').textContent = godzina;
-                        document.getElementById('sheetMinuta').textContent = minuta;
-                        
-                        statusElement.textContent = 'Dane pobrane pomyślnie! Rozpoczynam odliczanie...';
-                        setInterval(updateCountdown, 1000); 
-                        updateCountdown();
-                    } else {
-                        throw new Error('Za mało komórek w drugim wierszu. Upewnij się, że jest co najmniej 6 komórek (rok, miesiąc, dzień, godzina, minuta, tytuł).');
-                    }
-                } else {
-                    throw new Error('Brak drugiego wiersza w arkuszu. Upewnij się, że arkusz zawiera dane.');
-                }
-
-            } catch (error) {
-                console.error('Wystąpił błąd podczas pobierania lub przetwarzania danych:', error);
-                statusElement.textContent = `Błąd: ${error.message}`;
-                document.getElementById('mainTitle').textContent = 'Błąd Ładowania Tytułu!';
-                document.getElementById('sheetRok').textContent = 'Błąd';
-                document.getElementById('sheetMiesiac').textContent = 'Błąd';
-                document.getElementById('sheetDzien').textContent = 'Błąd';
-                document.getElementById('sheetGodzina').textContent = 'Błąd';
-                document.getElementById('sheetMinuta').textContent = 'Błąd';
-                document.getElementById('days').textContent = '--';
-                document.getElementById('hours').textContent = '--';
-                document.getElementById('minutes').textContent = '--';
-                document.getElementById('seconds').textContent = '--';
+                const res = await fetch(url);
+                const data = await res.json();
+                const [year, month, day, hour, minute, description] = data.values[0];
+                const eventDate = new Date(year, month - 1, day, hour, minute);
+                document.getElementById('event-title').textContent = description;
+                startCountdown(eventDate);
+            } catch (err) {
+                console.error('Błąd pobierania danych:', err);
+                document.getElementById('event-title').textContent = 'Nie udało się pobrać danych';
             }
         }
 
-        function updateCountdown() {
-            if (!targetDate) return; 
+        function startCountdown(targetDate) {
+            function update() {
+                const now = new Date();
+                const diff = targetDate - now;
 
-            const now = new Date().getTime();
-            const distance = targetDate.getTime() - now;
+                if (diff <= 0) {
+                    document.querySelector('.countdown').innerHTML = '<div class="tile">Wydarzenie trwa!</div>';
+                    clearInterval(timer);
+                    return;
+                }
 
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / (1000 * 60)) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
 
-            if (distance < 0) {
-                document.getElementById('countdown').innerHTML = "<h2>Wydarzenie się rozpoczęło lub zakończyło!</h2>";
-                document.getElementById('status').textContent = '';
-                clearInterval(this.interval); 
-                return;
+                document.getElementById('days').firstChild.textContent = days;
+                document.getElementById('hours').firstChild.textContent = hours;
+                document.getElementById('minutes').firstChild.textContent = minutes;
+                document.getElementById('seconds').firstChild.textContent = seconds;
             }
-
-            document.getElementById('days').textContent = String(days).padStart(2, '0');
-            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            update();
+            const timer = setInterval(update, 1000);
         }
 
-        document.addEventListener('DOMContentLoaded', fetchDataAndStartCountdown);
+        fetchEventData();
     </script>
 </body>
 </html>
